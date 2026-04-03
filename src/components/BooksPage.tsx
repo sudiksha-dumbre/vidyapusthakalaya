@@ -107,12 +107,14 @@ export default function BooksPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{book.shelfLocation}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex justify-end gap-1">
-                    <button onClick={() => handleEdit(book)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => { deleteBook(book.id); toast.success('Book deleted'); }} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
-                  </div>
-                </td>
+                {canManage && (
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex justify-end gap-1">
+                      <button onClick={() => handleEdit(book)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"><Pencil className="h-4 w-4" /></button>
+                      <button onClick={() => { deleteBook(book.id); toast.success('Book deleted'); }} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
