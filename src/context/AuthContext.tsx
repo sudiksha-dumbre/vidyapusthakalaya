@@ -29,7 +29,11 @@ export function useAuth() {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [accounts, setAccounts] = useState<(User & { password: string })[]>([]);
+  const [accounts, setAccounts] = useState<(User & { password: string })[]>([
+    { id: 'm5', name: 'Amit Verma', email: 'admin@library.in', password: 'admin123', role: 'admin' },
+    { id: 'm6', name: 'Kavita Singh', email: 'librarian@library.in', password: 'lib123', role: 'librarian' },
+    { id: 'm1', name: 'Aarav Sharma', email: 'student@library.in', password: 'stu123', role: 'student' },
+  ]);
 
   const login = useCallback((email: string, password: string): string | null => {
     const found = accounts.find(u => u.email === email && u.password === password);
