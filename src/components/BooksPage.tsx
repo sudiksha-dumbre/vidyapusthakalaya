@@ -53,10 +53,12 @@ export default function BooksPage() {
           <h1 className="text-3xl font-bold font-display text-foreground">Books</h1>
           <p className="text-muted-foreground font-body mt-1">Manage the library catalogue</p>
         </div>
-        <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm(emptyForm); }} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          {showForm ? 'Cancel' : 'Add Book'}
-        </Button>
+        {canManage && (
+          <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm(emptyForm); }} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+            {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            {showForm ? 'Cancel' : 'Add Book'}
+          </Button>
+        )}
       </div>
 
       {showForm && (
