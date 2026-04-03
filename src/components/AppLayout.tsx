@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Library className="h-7 w-7 text-sidebar-primary" />
           <div>
             <h2 className="text-base font-bold font-display text-sidebar-foreground leading-tight">Vidya Pusthakalaya</h2>
-            <p className="text-[10px] text-sidebar-foreground/60 font-body">Library Management System</p>
+            
           </div>
         </div>
         <nav className="mt-4 px-3 space-y-1">

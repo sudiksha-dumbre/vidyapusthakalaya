@@ -27,7 +27,7 @@ export default function Dashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold font-display text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground font-body mt-1">Library Management System Overview</p>
+        <p className="text-muted-foreground font-body mt-1">Overview</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">

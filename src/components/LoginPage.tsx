@@ -113,7 +113,7 @@ export default function LoginPage() {
           </p>
         </form>
 
-        <p className="text-center text-[10px] text-muted-foreground font-body">DBMS Project · University Submission · 2026</p>
+        
       </div>
     </div>
   );
