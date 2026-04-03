@@ -12,6 +12,7 @@ export default function BooksPage() {
   const { books, getAuthor, getCategory, addBook, updateBook, deleteBook } = useLibrary();
   const { hasAccess } = useAuth();
   const canManage = hasAccess(['admin', 'librarian']);
+  const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
