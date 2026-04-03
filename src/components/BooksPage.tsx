@@ -7,9 +7,6 @@ import { Plus, Pencil, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
 
 export default function BooksPage() {
   const { books, getAuthor, getCategory, addBook, updateBook, deleteBook } = useLibrary();
