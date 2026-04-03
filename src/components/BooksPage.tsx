@@ -15,7 +15,8 @@ export default function BooksPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  const emptyForm: Omit<Book, 'id'> = { isbn: '', title: '', authorId: 'a1', categoryId: 'c1', publisher: '', year: 2024, totalCopies: 1, availableCopies: 1, shelfLocation: '', addedDate: new Date().toISOString().split('T')[0] };
+  const emptyForm: Omit<Book, 'id'> = { isbn: '', title: '', authorId: authorsList[0]?.id || '', categoryId: categoriesList[0]?.id || 'c1', publisher: '', year: 2024, totalCopies: 1, availableCopies: 1, shelfLocation: '', addedDate: new Date().toISOString().split('T')[0] };
+  const [newAuthorName, setNewAuthorName] = useState('');
   const [form, setForm] = useState(emptyForm);
 
   const filtered = books.filter(b => {
