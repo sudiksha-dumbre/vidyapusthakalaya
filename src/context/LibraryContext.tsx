@@ -1,11 +1,13 @@
-import { Book, Author, Category, Member, Transaction, calculateFine, formatRupees, LOAN_DAYS } from '@/lib/types';
-import { authors, categories, initialBooks, initialMembers, initialTransactions } from '@/lib/store';
+import { Book, Author, Category, Member, Transaction, calculateFine, LOAN_DAYS } from '@/lib/types';
+import { authors as initialAuthors, categories, initialBooks, initialMembers, initialTransactions } from '@/lib/store';
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
 interface LibraryContextType {
   books: Book[];
   members: Member[];
   transactions: Transaction[];
+  authorsList: Author[];
+  categoriesList: Category[];
   getAuthor: (id: string) => Author | undefined;
   getCategory: (id: string) => Category | undefined;
   getBook: (id: string) => Book | undefined;
@@ -14,6 +16,7 @@ interface LibraryContextType {
   updateBook: (id: string, updates: Partial<Book>) => void;
   deleteBook: (id: string) => void;
   addMember: (member: Omit<Member, 'id'>) => void;
+  addAuthor: (author: Omit<Author, 'id'>) => string;
   issueBook: (bookId: string, memberId: string) => string | null;
   returnBook: (transactionId: string) => number;
   stats: { totalBooks: number; totalMembers: number; activeLoans: number; overdueBooks: number; totalFines: number };
@@ -29,10 +32,11 @@ export function useLibrary() {
 
 export function LibraryProvider({ children }: { children: React.ReactNode }) {
   const [books, setBooks] = useState<Book[]>(initialBooks);
-  const [members] = useState<Member[]>(initialMembers);
+  const [members, setMembers] = useState<Member[]>(initialMembers);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
+  const [authorsList, setAuthors] = useState<Author[]>(initialAuthors);
 
-  const getAuthor = useCallback((id: string) => authors.find(a => a.id === id), []);
+  const getAuthor = useCallback((id: string) => authorsList.find(a => a.id === id), [authorsList]);
   const getCategory = useCallback((id: string) => categories.find(c => c.id === id), []);
   const getBook = useCallback((id: string) => books.find(b => b.id === id), [books]);
   const getMember = useCallback((id: string) => members.find(m => m.id === id), [members]);
@@ -50,7 +54,13 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addMember = useCallback((member: Omit<Member, 'id'>) => {
-    // members state is not mutable in this demo but we keep the interface
+    setMembers(prev => [...prev, { ...member, id: `m${Date.now()}` }]);
+  }, []);
+
+  const addAuthor = useCallback((author: Omit<Author, 'id'>): string => {
+    const id = `a${Date.now()}`;
+    setAuthors(prev => [...prev, { ...author, id }]);
+    return id;
   }, []);
 
   const issueBook = useCallback((bookId: string, memberId: string): string | null => {
@@ -98,7 +108,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
   }, [books, members, transactions]);
 
   return (
-    <LibraryContext.Provider value={{ books, members, transactions, getAuthor, getCategory, getBook, getMember, addBook, updateBook, deleteBook, addMember, issueBook, returnBook, stats }}>
+    <LibraryContext.Provider value={{ books, members, transactions, authorsList, categoriesList: categories, getAuthor, getCategory, getBook, getMember, addBook, updateBook, deleteBook, addMember, addAuthor, issueBook, returnBook, stats }}>
       {children}
     </LibraryContext.Provider>
   );
