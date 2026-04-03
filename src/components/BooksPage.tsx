@@ -91,7 +91,7 @@ export default function BooksPage() {
               <th className="px-4 py-3 text-left font-semibold text-foreground hidden lg:table-cell">ISBN</th>
               <th className="px-4 py-3 text-center font-semibold text-foreground">Available</th>
               <th className="px-4 py-3 text-left font-semibold text-foreground hidden lg:table-cell">Shelf</th>
-              <th className="px-4 py-3 text-right font-semibold text-foreground">Actions</th>
+              {canManage && <th className="px-4 py-3 text-right font-semibold text-foreground">Actions</th>}
             </tr>
           </thead>
           <tbody>
