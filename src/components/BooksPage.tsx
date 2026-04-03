@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLibrary } from '@/context/LibraryContext';
+import { useAuth } from '@/context/AuthContext';
 import { authors, categories } from '@/lib/store';
 import { Book } from '@/lib/types';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
@@ -9,6 +10,8 @@ import { toast } from 'sonner';
 
 export default function BooksPage() {
   const { books, getAuthor, getCategory, addBook, updateBook, deleteBook } = useLibrary();
+  const { hasAccess } = useAuth();
+  const canManage = hasAccess(['admin', 'librarian']);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -50,10 +53,12 @@ export default function BooksPage() {
           <h1 className="text-3xl font-bold font-display text-foreground">Books</h1>
           <p className="text-muted-foreground font-body mt-1">Manage the library catalogue</p>
         </div>
-        <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm(emptyForm); }} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          {showForm ? 'Cancel' : 'Add Book'}
-        </Button>
+        {canManage && (
+          <Button onClick={() => { setShowForm(!showForm); setEditId(null); setForm(emptyForm); }} className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+            {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            {showForm ? 'Cancel' : 'Add Book'}
+          </Button>
+        )}
       </div>
 
       {showForm && (
@@ -86,7 +91,7 @@ export default function BooksPage() {
               <th className="px-4 py-3 text-left font-semibold text-foreground hidden lg:table-cell">ISBN</th>
               <th className="px-4 py-3 text-center font-semibold text-foreground">Available</th>
               <th className="px-4 py-3 text-left font-semibold text-foreground hidden lg:table-cell">Shelf</th>
-              <th className="px-4 py-3 text-right font-semibold text-foreground">Actions</th>
+              {canManage && <th className="px-4 py-3 text-right font-semibold text-foreground">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -102,12 +107,14 @@ export default function BooksPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{book.shelfLocation}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex justify-end gap-1">
-                    <button onClick={() => handleEdit(book)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"><Pencil className="h-4 w-4" /></button>
-                    <button onClick={() => { deleteBook(book.id); toast.success('Book deleted'); }} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
-                  </div>
-                </td>
+                {canManage && (
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex justify-end gap-1">
+                      <button onClick={() => handleEdit(book)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"><Pencil className="h-4 w-4" /></button>
+                      <button onClick={() => { deleteBook(book.id); toast.success('Book deleted'); }} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
