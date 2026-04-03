@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 export default function BooksPage() {
-  const { books, getAuthor, getCategory, addBook, updateBook, deleteBook } = useLibrary();
+  const { books, authorsList, categoriesList, getAuthor, getCategory, addBook, updateBook, deleteBook, addAuthor } = useLibrary();
   const { hasAccess } = useAuth();
   const canManage = hasAccess(['admin', 'librarian']);
   const [showForm, setShowForm] = useState(false);
