@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { useLibrary } from '@/context/LibraryContext';
+import { useAuth } from '@/context/AuthContext';
 import { authors, categories } from '@/lib/store';
 import { Book } from '@/lib/types';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
