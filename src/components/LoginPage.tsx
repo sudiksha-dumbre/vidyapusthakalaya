@@ -42,7 +42,6 @@ export default function LoginPage() {
             <Library className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-3xl font-bold font-display text-foreground">Vidya Pusthakalaya</h1>
-          <p className="text-muted-foreground font-body mt-1">Library Management System — DBMS Project</p>
         </div>
 
         {/* Form */}
