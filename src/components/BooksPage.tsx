@@ -65,11 +65,24 @@ export default function BooksPage() {
         <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Input placeholder="ISBN" value={form.isbn} onChange={e => setForm(f => ({ ...f, isbn: e.target.value }))} required />
           <Input placeholder="Title" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
-          <select className="rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={form.authorId} onChange={e => setForm(f => ({ ...f, authorId: e.target.value }))}>
-            {authors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-          </select>
+          <div className="flex gap-2">
+            <select className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={form.authorId} onChange={e => setForm(f => ({ ...f, authorId: e.target.value }))}>
+              <option value="">Select author</option>
+              {authorsList.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+            </select>
+          </div>
+          <div className="flex gap-2">
+            <Input placeholder="Or add new author" value={newAuthorName} onChange={e => setNewAuthorName(e.target.value)} />
+            <Button type="button" variant="outline" className="shrink-0 text-xs" onClick={() => {
+              if (!newAuthorName.trim()) return;
+              const id = addAuthor({ name: newAuthorName.trim(), nationality: 'Indian' });
+              setForm(f => ({ ...f, authorId: id }));
+              setNewAuthorName('');
+              toast.success('Author added');
+            }}>Add</Button>
+          </div>
           <select className="rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={form.categoryId} onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            {categoriesList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <Input placeholder="Publisher" value={form.publisher} onChange={e => setForm(f => ({ ...f, publisher: e.target.value }))} required />
           <Input type="number" placeholder="Year" value={form.year} onChange={e => setForm(f => ({ ...f, year: +e.target.value }))} required />
