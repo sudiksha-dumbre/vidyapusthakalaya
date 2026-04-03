@@ -1,34 +1,63 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LibraryProvider } from "@/context/LibraryContext";
+import { AuthProvider, useAuth, UserRole } from "@/context/AuthContext";
 import AppLayout from "@/components/AppLayout";
 import Dashboard from "@/components/Dashboard";
 import BooksPage from "@/components/BooksPage";
 import MembersPage from "@/components/MembersPage";
 import TransactionsPage from "@/components/TransactionsPage";
+import LoginPage from "@/components/LoginPage";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
+
+function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles: UserRole[] }) {
+  const { isAuthenticated, hasAccess } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!hasAccess(roles)) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
+
+  return (
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/books" element={<BooksPage />} />
+        <Route path="/members" element={<ProtectedRoute roles={['admin', 'librarian']}><MembersPage /></ProtectedRoute>} />
+        <Route path="/transactions" element={<TransactionsPage />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AppLayout>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Sonner />
-      <LibraryProvider>
-        <BrowserRouter>
-          <AppLayout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/books" element={<BooksPage />} />
-              <Route path="/members" element={<MembersPage />} />
-              <Route path="/transactions" element={<TransactionsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AppLayout>
-        </BrowserRouter>
-      </LibraryProvider>
+      <AuthProvider>
+        <LibraryProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </LibraryProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
