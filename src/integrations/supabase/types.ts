@@ -14,16 +14,258 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      authors: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          nationality: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          nationality?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          nationality?: string
+        }
+        Relationships: []
+      }
+      books: {
+        Row: {
+          added_date: string
+          author_id: string
+          available_copies: number
+          category_id: string
+          created_at: string
+          id: string
+          isbn: string
+          publisher: string
+          shelf_location: string
+          title: string
+          total_copies: number
+          year: number
+        }
+        Insert: {
+          added_date?: string
+          author_id: string
+          available_copies?: number
+          category_id: string
+          created_at?: string
+          id?: string
+          isbn: string
+          publisher?: string
+          shelf_location?: string
+          title: string
+          total_copies?: number
+          year?: number
+        }
+        Update: {
+          added_date?: string
+          author_id?: string
+          available_copies?: number
+          category_id?: string
+          created_at?: string
+          id?: string
+          isbn?: string
+          publisher?: string
+          shelf_location?: string
+          title?: string
+          total_copies?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "books_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      members: {
+        Row: {
+          active: boolean
+          created_at: string
+          department: string
+          email: string
+          id: string
+          join_date: string
+          max_books: number
+          name: string
+          phone: string
+          role: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          department?: string
+          email: string
+          id?: string
+          join_date?: string
+          max_books?: number
+          name: string
+          phone?: string
+          role?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          department?: string
+          email?: string
+          id?: string
+          join_date?: string
+          max_books?: number
+          name?: string
+          phone?: string
+          role?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          book_id: string
+          created_at: string
+          due_date: string
+          fine_amount: number
+          id: string
+          issue_date: string
+          member_id: string
+          return_date: string | null
+          status: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          due_date: string
+          fine_amount?: number
+          id?: string
+          issue_date?: string
+          member_id: string
+          return_date?: string | null
+          status?: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          due_date?: string
+          fine_amount?: number
+          id?: string
+          issue_date?: string
+          member_id?: string
+          return_date?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "librarian" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +392,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "librarian", "student"],
+    },
   },
 } as const
