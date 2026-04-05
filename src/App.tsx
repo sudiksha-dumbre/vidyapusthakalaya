@@ -11,6 +11,7 @@ import MembersPage from "@/components/MembersPage";
 import TransactionsPage from "@/components/TransactionsPage";
 import LoginPage from "@/components/LoginPage";
 import NotFound from "./pages/NotFound.tsx";
+import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
 
@@ -22,7 +23,15 @@ function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles:
 }
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -34,16 +43,18 @@ function AppRoutes() {
   }
 
   return (
-    <AppLayout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/books" element={<BooksPage />} />
-        <Route path="/members" element={<ProtectedRoute roles={['admin', 'librarian']}><MembersPage /></ProtectedRoute>} />
-        <Route path="/transactions" element={<TransactionsPage />} />
-        <Route path="/login" element={<Navigate to="/" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AppLayout>
+    <LibraryProvider>
+      <AppLayout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/books" element={<BooksPage />} />
+          <Route path="/members" element={<ProtectedRoute roles={['admin', 'librarian']}><MembersPage /></ProtectedRoute>} />
+          <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </AppLayout>
+    </LibraryProvider>
   );
 }
 
@@ -52,11 +63,9 @@ const App = () => (
     <TooltipProvider>
       <Sonner />
       <AuthProvider>
-        <LibraryProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </LibraryProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

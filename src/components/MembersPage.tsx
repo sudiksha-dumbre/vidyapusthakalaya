@@ -12,13 +12,13 @@ export default function MembersPage() {
   const { hasAccess } = useAuth();
   const canManage = hasAccess(['admin']);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', phone: '', role: 'student' as Member['role'], department: '', maxBooks: 3 });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', role: 'student' as Member['role'], department: '', max_books: 3 });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    addMember({ ...form, joinDate: new Date().toISOString().split('T')[0], active: true, id: '' } as any);
+    await addMember({ ...form, join_date: new Date().toISOString().split('T')[0], active: true });
     toast.success('Member added');
-    setForm({ name: '', email: '', phone: '', role: 'student', department: '', maxBooks: 3 });
+    setForm({ name: '', email: '', phone: '', role: 'student', department: '', max_books: 3 });
     setShowForm(false);
   };
 
@@ -59,7 +59,7 @@ export default function MembersPage() {
             <option value="admin">Admin</option>
           </select>
           <Input placeholder="Department" value={form.department} onChange={e => setForm(f => ({ ...f, department: e.target.value }))} required />
-          <Input type="number" placeholder="Max Books" value={form.maxBooks} onChange={e => setForm(f => ({ ...f, maxBooks: +e.target.value }))} min={1} max={10} required />
+          <Input type="number" placeholder="Max Books" value={form.max_books} onChange={e => setForm(f => ({ ...f, max_books: +e.target.value }))} min={1} max={10} required />
           <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">Add Member</Button>
         </form>
       )}
@@ -85,11 +85,11 @@ export default function MembersPage() {
               <div className="mt-4 flex flex-wrap gap-2 text-xs font-body">
                 <span className={`rounded-full px-2.5 py-0.5 font-medium capitalize ${roleBadge(m.role)}`}>{m.role}</span>
                 <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">{m.department}</span>
-                <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">Max: {m.maxBooks} books</span>
+                <span className="rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground">Max: {m.max_books} books</span>
               </div>
               <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                 <Users className="h-3 w-3" />
-                <span>Joined {m.joinDate}</span>
+                <span>Joined {m.join_date}</span>
               </div>
             </div>
           ))}

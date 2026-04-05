@@ -2,14 +2,14 @@ export interface Book {
   id: string;
   isbn: string;
   title: string;
-  authorId: string;
-  categoryId: string;
+  author_id: string;
+  category_id: string;
   publisher: string;
   year: number;
-  totalCopies: number;
-  availableCopies: number;
-  shelfLocation: string;
-  addedDate: string;
+  total_copies: number;
+  available_copies: number;
+  shelf_location: string;
+  added_date: string;
 }
 
 export interface Author {
@@ -31,19 +31,19 @@ export interface Member {
   phone: string;
   role: 'student' | 'faculty' | 'admin' | 'librarian';
   department: string;
-  joinDate: string;
-  maxBooks: number;
+  join_date: string;
+  max_books: number;
   active: boolean;
 }
 
 export interface Transaction {
   id: string;
-  bookId: string;
-  memberId: string;
-  issueDate: string;
-  dueDate: string;
-  returnDate: string | null;
-  fineAmount: number; // in ₹
+  book_id: string;
+  member_id: string;
+  issue_date: string;
+  due_date: string;
+  return_date: string | null;
+  fine_amount: number; // in ₹
   status: 'issued' | 'returned' | 'overdue';
 }
 

@@ -19,7 +19,7 @@ const StatCard = ({ icon: Icon, label, value, color }: { icon: any; label: strin
 export default function Dashboard() {
   const { stats, transactions, getBook, getMember } = useLibrary();
 
-  const recentTransactions = [...transactions].sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime()).slice(0, 5);
+  const recentTransactions = [...transactions].sort((a, b) => new Date(b.issue_date).getTime() - new Date(a.issue_date).getTime()).slice(0, 5);
 
   const overdueList = transactions.filter(t => t.status === 'overdue');
 
@@ -39,18 +39,18 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Recent Transactions */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-semibold font-display text-foreground mb-4">Recent Transactions</h2>
           <div className="space-y-3">
+            {recentTransactions.length === 0 && <p className="text-muted-foreground font-body text-sm">No transactions yet</p>}
             {recentTransactions.map(tx => {
-              const book = getBook(tx.bookId);
-              const member = getMember(tx.memberId);
+              const book = getBook(tx.book_id);
+              const member = getMember(tx.member_id);
               return (
                 <div key={tx.id} className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
                   <div>
                     <p className="font-medium font-body text-foreground text-sm">{book?.title}</p>
-                    <p className="text-xs text-muted-foreground">{member?.name} · {tx.issueDate}</p>
+                    <p className="text-xs text-muted-foreground">{member?.name} · {tx.issue_date}</p>
                   </div>
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                     tx.status === 'returned' ? 'bg-success/10 text-success' :
@@ -63,7 +63,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Overdue Books */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-semibold font-display text-foreground mb-4">Overdue Books</h2>
           {overdueList.length === 0 ? (
@@ -71,15 +70,15 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-3">
               {overdueList.map(tx => {
-                const book = getBook(tx.bookId);
-                const member = getMember(tx.memberId);
+                const book = getBook(tx.book_id);
+                const member = getMember(tx.member_id);
                 return (
                   <div key={tx.id} className="flex items-center justify-between rounded-lg bg-destructive/5 border border-destructive/10 px-4 py-3">
                     <div>
                       <p className="font-medium font-body text-foreground text-sm">{book?.title}</p>
-                      <p className="text-xs text-muted-foreground">{member?.name} · Due: {tx.dueDate}</p>
+                      <p className="text-xs text-muted-foreground">{member?.name} · Due: {tx.due_date}</p>
                     </div>
-                    <span className="text-sm font-semibold text-destructive">{formatRupees(tx.fineAmount)}</span>
+                    <span className="text-sm font-semibold text-destructive">{formatRupees(Number(tx.fine_amount))}</span>
                   </div>
                 );
               })}
