@@ -11,9 +11,9 @@ export default function TransactionsPage() {
   const [selectedBook, setSelectedBook] = useState('');
   const [selectedMember, setSelectedMember] = useState('');
 
-  const handleIssue = () => {
+  const handleIssue = async () => {
     if (!selectedBook || !selectedMember) { toast.error('Select book and member'); return; }
-    const err = issueBook(selectedBook, selectedMember);
+    const err = await issueBook(selectedBook, selectedMember);
     if (err) { toast.error(err); return; }
     toast.success('Book issued successfully');
     setShowIssue(false);
@@ -21,13 +21,13 @@ export default function TransactionsPage() {
     setSelectedMember('');
   };
 
-  const handleReturn = (txId: string) => {
-    const fine = returnBook(txId);
+  const handleReturn = async (txId: string) => {
+    const fine = await returnBook(txId);
     if (fine > 0) toast.info(`Book returned. Fine: ${formatRupees(fine)}`);
     else toast.success('Book returned. No fine.');
   };
 
-  const sorted = [...transactions].sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime());
+  const sorted = [...transactions].sort((a, b) => new Date(b.issue_date).getTime() - new Date(a.issue_date).getTime());
 
   return (
     <div className="space-y-6">
@@ -47,7 +47,7 @@ export default function TransactionsPage() {
             <label className="text-xs font-medium text-muted-foreground font-body mb-1 block">Book</label>
             <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={selectedBook} onChange={e => setSelectedBook(e.target.value)}>
               <option value="">Select a book</option>
-              {books.filter(b => b.availableCopies > 0).map(b => <option key={b.id} value={b.id}>{b.title} ({b.availableCopies} avail.)</option>)}
+              {books.filter(b => b.available_copies > 0).map(b => <option key={b.id} value={b.id}>{b.title} ({b.available_copies} avail.)</option>)}
             </select>
           </div>
           <div className="flex-1 w-full">
@@ -78,12 +78,12 @@ export default function TransactionsPage() {
           <tbody>
             {sorted.map(tx => (
               <tr key={tx.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3 font-medium text-foreground">{getBook(tx.bookId)?.title}</td>
-                <td className="px-4 py-3 text-muted-foreground">{getMember(tx.memberId)?.name}</td>
-                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{tx.issueDate}</td>
-                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{tx.dueDate}</td>
-                <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{tx.returnDate || '—'}</td>
-                <td className="px-4 py-3 text-right font-medium text-foreground">{tx.fineAmount > 0 ? formatRupees(tx.fineAmount) : '—'}</td>
+                <td className="px-4 py-3 font-medium text-foreground">{getBook(tx.book_id)?.title}</td>
+                <td className="px-4 py-3 text-muted-foreground">{getMember(tx.member_id)?.name}</td>
+                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{tx.issue_date}</td>
+                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{tx.due_date}</td>
+                <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{tx.return_date || '—'}</td>
+                <td className="px-4 py-3 text-right font-medium text-foreground">{Number(tx.fine_amount) > 0 ? formatRupees(Number(tx.fine_amount)) : '—'}</td>
                 <td className="px-4 py-3 text-center">
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                     tx.status === 'returned' ? 'bg-success/10 text-success' :

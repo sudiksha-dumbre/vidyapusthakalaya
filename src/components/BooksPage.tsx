@@ -15,24 +15,24 @@ export default function BooksPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  const emptyForm: Omit<Book, 'id'> = { isbn: '', title: '', authorId: authorsList[0]?.id || '', categoryId: categoriesList[0]?.id || 'c1', publisher: '', year: 2024, totalCopies: 1, availableCopies: 1, shelfLocation: '', addedDate: new Date().toISOString().split('T')[0] };
+  const emptyForm: Omit<Book, 'id'> = { isbn: '', title: '', author_id: authorsList[0]?.id || '', category_id: categoriesList[0]?.id || '', publisher: '', year: 2024, total_copies: 1, available_copies: 1, shelf_location: '', added_date: new Date().toISOString().split('T')[0] };
   const [newAuthorName, setNewAuthorName] = useState('');
   const [form, setForm] = useState(emptyForm);
 
   const filtered = books.filter(b => {
     const q = search.toLowerCase();
-    const author = getAuthor(b.authorId);
-    const cat = getCategory(b.categoryId);
+    const author = getAuthor(b.author_id);
+    const cat = getCategory(b.category_id);
     return b.title.toLowerCase().includes(q) || author?.name.toLowerCase().includes(q) || cat?.name.toLowerCase().includes(q) || b.isbn.includes(q);
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editId) {
-      updateBook(editId, form);
+      await updateBook(editId, form);
       toast.success('Book updated successfully');
     } else {
-      addBook(form);
+      await addBook(form);
       toast.success('Book added successfully');
     }
     setForm(emptyForm);
@@ -41,7 +41,7 @@ export default function BooksPage() {
   };
 
   const handleEdit = (book: Book) => {
-    setForm({ isbn: book.isbn, title: book.title, authorId: book.authorId, categoryId: book.categoryId, publisher: book.publisher, year: book.year, totalCopies: book.totalCopies, availableCopies: book.availableCopies, shelfLocation: book.shelfLocation, addedDate: book.addedDate });
+    setForm({ isbn: book.isbn, title: book.title, author_id: book.author_id, category_id: book.category_id, publisher: book.publisher, year: book.year, total_copies: book.total_copies, available_copies: book.available_copies, shelf_location: book.shelf_location, added_date: book.added_date });
     setEditId(book.id);
     setShowForm(true);
   };
@@ -66,28 +66,28 @@ export default function BooksPage() {
           <Input placeholder="ISBN" value={form.isbn} onChange={e => setForm(f => ({ ...f, isbn: e.target.value }))} required />
           <Input placeholder="Title" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
           <div className="flex gap-2">
-            <select className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={form.authorId} onChange={e => setForm(f => ({ ...f, authorId: e.target.value }))}>
+            <select className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={form.author_id} onChange={e => setForm(f => ({ ...f, author_id: e.target.value }))}>
               <option value="">Select author</option>
               {authorsList.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
           </div>
           <div className="flex gap-2">
             <Input placeholder="Or add new author" value={newAuthorName} onChange={e => setNewAuthorName(e.target.value)} />
-            <Button type="button" variant="outline" className="shrink-0 text-xs" onClick={() => {
+            <Button type="button" variant="outline" className="shrink-0 text-xs" onClick={async () => {
               if (!newAuthorName.trim()) return;
-              const id = addAuthor({ name: newAuthorName.trim(), nationality: 'Indian' });
-              setForm(f => ({ ...f, authorId: id }));
+              const id = await addAuthor({ name: newAuthorName.trim(), nationality: 'Indian' });
+              setForm(f => ({ ...f, author_id: id }));
               setNewAuthorName('');
               toast.success('Author added');
             }}>Add</Button>
           </div>
-          <select className="rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={form.categoryId} onChange={e => setForm(f => ({ ...f, categoryId: e.target.value }))}>
+          <select className="rounded-md border border-input bg-background px-3 py-2 text-sm font-body" value={form.category_id} onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))}>
             {categoriesList.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
           <Input placeholder="Publisher" value={form.publisher} onChange={e => setForm(f => ({ ...f, publisher: e.target.value }))} required />
           <Input type="number" placeholder="Year" value={form.year} onChange={e => setForm(f => ({ ...f, year: +e.target.value }))} required />
-          <Input type="number" placeholder="Total Copies" value={form.totalCopies} onChange={e => setForm(f => ({ ...f, totalCopies: +e.target.value, availableCopies: +e.target.value }))} required min={1} />
-          <Input placeholder="Shelf Location" value={form.shelfLocation} onChange={e => setForm(f => ({ ...f, shelfLocation: e.target.value }))} required />
+          <Input type="number" placeholder="Total Copies" value={form.total_copies} onChange={e => setForm(f => ({ ...f, total_copies: +e.target.value, available_copies: +e.target.value }))} required min={1} />
+          <Input placeholder="Shelf Location" value={form.shelf_location} onChange={e => setForm(f => ({ ...f, shelf_location: e.target.value }))} required />
           <Button type="submit" className="sm:col-span-2 lg:col-span-1 bg-primary text-primary-foreground hover:bg-primary/90">{editId ? 'Update' : 'Add'} Book</Button>
         </form>
       )}
@@ -111,20 +111,20 @@ export default function BooksPage() {
             {filtered.map(book => (
               <tr key={book.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3 font-medium text-foreground">{book.title}</td>
-                <td className="px-4 py-3 text-muted-foreground">{getAuthor(book.authorId)?.name}</td>
-                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{getCategory(book.categoryId)?.name}</td>
+                <td className="px-4 py-3 text-muted-foreground">{getAuthor(book.author_id)?.name}</td>
+                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{getCategory(book.category_id)?.name}</td>
                 <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell font-mono text-xs">{book.isbn}</td>
                 <td className="px-4 py-3 text-center">
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${book.availableCopies > 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
-                    {book.availableCopies}/{book.totalCopies}
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${book.available_copies > 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'}`}>
+                    {book.available_copies}/{book.total_copies}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{book.shelfLocation}</td>
+                <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{book.shelf_location}</td>
                 {canManage && (
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
                       <button onClick={() => handleEdit(book)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"><Pencil className="h-4 w-4" /></button>
-                      <button onClick={() => { deleteBook(book.id); toast.success('Book deleted'); }} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
+                      <button onClick={async () => { await deleteBook(book.id); toast.success('Book deleted'); }} className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </td>
                 )}

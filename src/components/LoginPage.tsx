@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth, UserRole } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Library, LogIn, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { Library, LogIn, Eye, EyeOff, UserPlus, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { login, register } = useAuth();
@@ -14,29 +14,34 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setSubmitting(true);
 
-    if (isRegister) {
-      const err = register(name.trim(), email.trim(), password, role);
-      if (err) { setError(err); return; }
-      setSuccess('Account created! You can now sign in.');
-      setIsRegister(false);
-      setName('');
-      setPassword('');
-    } else {
-      const err = login(email.trim(), password);
-      if (err) setError(err);
+    try {
+      if (isRegister) {
+        const err = await register(name.trim(), email.trim(), password, role);
+        if (err) { setError(err); return; }
+        setSuccess('Account created! You can now sign in.');
+        setIsRegister(false);
+        setName('');
+        setPassword('');
+      } else {
+        const err = await login(email.trim(), password);
+        if (err) setError(err);
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
-        {/* Header */}
         <div className="text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 mb-4">
             <Library className="h-8 w-8 text-primary" />
@@ -44,7 +49,6 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold font-display text-foreground">Vidya Pusthakalaya</h1>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
           <h2 className="text-lg font-semibold font-display text-foreground">
             {isRegister ? 'Create Account' : 'Sign In'}
@@ -78,10 +82,11 @@ export default function LoginPage() {
             <div className="relative">
               <Input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Enter password"
+                placeholder="Enter password (min 6 chars)"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
+                minLength={6}
                 className="pr-10"
               />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -101,8 +106,10 @@ export default function LoginPage() {
             </div>
           )}
 
-          <Button type="submit" className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-            {isRegister ? <><UserPlus className="h-4 w-4" /> Create Account</> : <><LogIn className="h-4 w-4" /> Sign In</>}
+          <Button type="submit" className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90" disabled={submitting}>
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> :
+              isRegister ? <><UserPlus className="h-4 w-4" /> Create Account</> : <><LogIn className="h-4 w-4" /> Sign In</>
+            }
           </Button>
 
           <p className="text-center text-sm text-muted-foreground font-body">
@@ -112,8 +119,6 @@ export default function LoginPage() {
             </button>
           </p>
         </form>
-
-        
       </div>
     </div>
   );
